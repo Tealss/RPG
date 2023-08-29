@@ -12,13 +12,20 @@ using NAudio.Midi;
 
 class SoundPlayer
 {
-    public static async Task PlaySoundAsync(string audioFilePath)
+    private static WaveOutEvent outputDevice;
+
+    public static async Task PlaySoundAsync(string audioFileName)
     {
+        string audioFilePath = "BGM.mp3";
+        string fullPath = Path.Combine(@"C:\Users\User\source\repos\kksoo0131\TextBased_Dungeon_Game\bin\Debug\net6.0", audioFilePath);
+
         using (var audioFile = new AudioFileReader(audioFilePath))
-        using (var outputDevice = new WaveOutEvent())
         {
+            outputDevice = new WaveOutEvent();
             outputDevice.Init(audioFile);
             outputDevice.Play();
+            outputDevice.Volume = 0.25f;
+
 
             while (outputDevice.PlaybackState == PlaybackState.Playing)
             {
@@ -26,7 +33,19 @@ class SoundPlayer
             }
         }
     }
+
+    // SoundPlayer.PlaySoundAsync("");
+
+    public static void StopSound()
+    {
+        if (outputDevice != null && outputDevice.PlaybackState == PlaybackState.Playing)
+        {
+            outputDevice.Stop();
+            outputDevice.Dispose();
+        }
+    }
 }
+
 
 internal class Program
 {
@@ -149,7 +168,7 @@ internal class Program
 
 
 
-        SoundPlayer.PlaySoundAsync("BGM.mp3");
+        SoundPlayer.PlaySoundAsync("");
         // 콘솔 텍스트 색깔 변경
         // 시작 및 캐릭터 생성
         Console.ForegroundColor = ConsoleColor.Yellow;
@@ -183,9 +202,9 @@ internal class Program
                     Console.WriteLine("전사를 선택하셨습니다.");
                     player = new Character("전사", "1", 10, 5, 5, 1, 1, 3, 3, 200, 50, 200, 50, 0);
                     player.Gold += 1000;
-                    Amu = false;
+                    Amu = false;                   
                     MainMenu();
-
+                 
                     break;
                 case "2":
                     Console.Clear();
@@ -207,7 +226,6 @@ internal class Program
                     Console.Beep();
                     Amu = false;
                     MainMenu();
-
                     break;
 
                 default:
@@ -1127,7 +1145,7 @@ internal class Program
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(Equ);
                     Console.ResetColor();
-                    
+            
                 }
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
